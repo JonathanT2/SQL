@@ -1,0 +1,35 @@
+--Create a grocery store database
+
+
+CREATE TABLE Games (
+ID INTEGER PRIMARY KEY,
+Name TEXT, Price INTEGER,
+Quantity INTEGER,
+Aisle INTEGER);
+
+INSERT INTO Games VALUES (1, "Dead Cells: Return to Castlevania", 10, 10, 1);
+INSERT INTO Games VALUES (2, "Sons of the Forest", 30, 8, 22);
+INSERT INTO Games VALUES (3, "Wo Long: Fallen Dynasty", 60, 8, 3);
+INSERT INTO Games VALUES (4, "Gran Turismo 7", 60, 9, 2);
+INSERT INTO Games VALUES (5, "Resident Evil VIllage", 40, 8, 4);
+INSERT INTO Games VALUES (6, "Kirby's Return to Dream Land Deluxe", 60, 7, 1);
+INSERT INTO Games VALUES (7, "Atomic Heart", 70, 8, 3);
+INSERT INTO Games VALUES (8, "Metroid Prime: Remastered", 40, 10, 5);
+INSERT INTO Games VALUES (9, "Octopath Traveler II", 30, 7, 6);
+INSERT INTO Games VALUES (10, "Like a Dragon: Ishin", 60, 7, 5);
+INSERT INTO Games VALUES (11, "Wild Hearts", 70, 8, 3);
+INSERT INTO Games VALUES (12, "Horizon: Call of the Mountain", 50, 7, 6);
+INSERT INTO Games VALUES (13, "Hogwarts Legacy", 60, 9, 1);
+INSERT INTO Games VALUES (14, "Hi-Fi Rush", 20, 9, 4);
+INSERT INTO Games VALUES (15, "Dead Space", 40, 9, 2);
+
+--Display the database ordered by price
+SELECT * FROM Games
+ORDER BY price;
+
+--What is the avg price of items in the bulk section?
+SELECT AVG(price) "Average game price"
+FROM Games;
+
+--Sum of quantity of games per asile grouped by price
+SELECT ID, Aisle, SUM(Quantity) FROM Games GROUP BY Price
