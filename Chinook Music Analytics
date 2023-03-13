@@ -1,0 +1,152 @@
+-- In this SQL, I'm querying a database to quantify statistics about Chinook music and displaying the ability to join multiple tables of data.
+
+-- 1. Show Customers (their full names, customer ID, and country) who are not in the US.
+SELECT *
+FROM customers;
+
+SELECT
+firstname,
+lastname,
+customerid,
+country
+FROM chinook.customers
+WHERE country <> 'USA';
+
+-- 2. Show only the Customers from Brazil.
+SELECT
+firstname,
+lastname,
+customerid,
+country
+FROM chinook.customers
+WHERE country = 'Brazil'
+GROUP BY lastname;
+
+-- 3. Find the Invoices of customers who are from Brazil. The resulting table should show the customer's full name, Invoice ID, Date of the invoice, and billing country.
+SELECT
+firstname,
+lastname,
+invoiceid,
+invoicedate,
+billingcountry
+FROM chinook.customers as cust
+LEFT JOIN chinook.invoices as inv
+ON cust.customerid = inv.customerid
+WHERE country = 'Brazil';
+
+-- 4. Show the Employees who are Sales Agents.
+SELECT
+firstname,
+lastname
+FROM chinook.employees
+WHERE title = 'Sales Support Agent';
+
+-- 5. Find a unique/distinct list of billing countries from the Invoice table.
+SELECT
+DISTINCT billingcountry
+FROM chinook.invoices;
+
+-- 6. Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.
+SELECT
+inv.*,
+emp.firstname AS 'Agent first name',
+emp.lastname AS 'Agent last name'
+FROM chinook.invoices inv
+JOIN chinook.customers cust
+ON inv.invoiceid = cust.customerid
+JOIN chinook.employees emp
+ON cust.supportrepid = emp.employeeid;
+
+-- 7. Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+SELECT
+inv.total,
+cust.firstname,
+cust.lastname,
+cust.country,
+emp.firstname AS 'emp first name',
+emp.lastname AS 'emp last name'
+FROM chinook.invoices inv
+JOIN chinook.customers cust
+ON inv.invoiceid = cust.customerid
+JOIN chinook.employees emp
+ON cust.supportrepid = emp.employeeid;
+
+-- 8. How many Invoices were there in 2009?
+SELECT
+COUNT(invoiceid)
+FROM chinook.invoices
+WHERE invoicedate LIKE '2009%';
+
+-- 9. What are the total sales for 2009?
+SELECT SUM(total)
+FROM chinook.invoices
+WHERE invoicedate LIKE '2009%';
+
+-- 10. Write a query that includes the purchased track name with each invoice line ID.
+SELECT
+inv.invoiceid,
+tra.name
+FROM chinook.tracks tra
+JOIN chinook.invoice_items invit
+ON tra.trackid = invit.trackid
+JOIN chinook.invoices inv
+ON inv.invoiceid = invit.invoiceid
+ORDER BY inv.invoiceid ASC;
+
+-- 11. Write a query that includes the purchased track name AND artist name with each invoice line ID.
+SELECT
+inv.invoiceid,
+tra.name,
+art.name
+FROM chinook.tracks tra
+JOIN chinook.invoice_items invit
+ON tra.trackid = invit.trackid
+JOIN chinook.invoices inv
+ON inv.invoiceid = invit.invoiceid
+JOIN chinook.albums alb
+ON tra.trackid = alb.albumid
+JOIN chinook.artists art
+ON art.artistid = alb.albumid
+ORDER BY inv.invoiceid ASC;
+
+-- 12. Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT
+tra.name AS 'Track',
+alb.title AS 'Album',
+med.name AS 'Media Type',
+gen.name AS 'Genre'
+FROM chinook.tracks tra
+JOIN chinook.albums alb
+ON tra.albumid = alb.albumid
+JOIN chinook.media_types med
+ON tra.mediatypeid = med.mediatypeid
+JOIN chinook.genres gen
+ON tra.genreid = gen.genreid
+ORDER BY tra.name ASC;
+
+-- 13. Show the total sales made by each sales agent.
+SELECT
+emp.firstname AS 'emp first name',
+emp.lastname AS 'emp last name',
+SUM(inv.total)
+FROM chinook.invoices inv
+JOIN chinook.customers cust
+ON inv.invoiceid = cust.customerid
+JOIN chinook.employees emp
+ON cust.supportrepid = emp.employeeid
+GROUP BY emp.lastname;
+
+-- 14. Which sales agent made the most dollars in sales in 2009?
+SELECT
+emp.firstname AS 'emp first name',
+emp.lastname AS 'emp last name',
+SUM(inv.total)
+FROM chinook.invoices inv
+JOIN chinook.customers cust
+ON inv.invoiceid = cust.customerid
+JOIN chinook.employees emp
+ON cust.supportrepid = emp.employeeid
+WHERE invoicedate LIKE '2009%'
+GROUP BY emp.lastname
+ORDER BY SUM(inv.total) DESC
+LIMIT 1;
